@@ -3,6 +3,22 @@ layout: docu
 title: NodeJS API
 selected: Client APIs
 ---
+## Modules
+
+<dl>
+<dt><a href="#module_duckdb">duckdb</a></dt>
+<dd></dd>
+</dl>
+
+## Typedefs
+
+<dl>
+<dt><a href="#DuckDbError">DuckDbError</a> : <code>object</code></dt>
+<dd></dd>
+<dt><a href="#HTTPError">HTTPError</a> : <code>object</code></dt>
+<dd></dd>
+</dl>
+
 <a name="module_duckdb"></a>
 
 ## duckdb
@@ -24,6 +40,7 @@ selected: Client APIs
         * [.register_buffer(name, array, force, callback)](#module_duckdb..Connection+register_buffer) ⇒ <code>void</code>
         * [.unregister_buffer(name, callback)](#module_duckdb..Connection+unregister_buffer) ⇒ <code>void</code>
     * [~Statement](#module_duckdb..Statement)
+        * [.sql](#module_duckdb..Statement+sql) ⇒
         * [.get()](#module_duckdb..Statement+get)
         * [.run(sql, ...params, callback)](#module_duckdb..Statement+run) ⇒ <code>void</code>
         * [.all(sql, ...params, callback)](#module_duckdb..Statement+all) ⇒ <code>void</code>
@@ -55,6 +72,7 @@ selected: Client APIs
         * [.register_buffer(name)](#module_duckdb..Database+register_buffer) ⇒ <code>this</code>
         * [.unregister_buffer(name)](#module_duckdb..Database+unregister_buffer) ⇒ <code>this</code>
         * [.unregister_udf(name)](#module_duckdb..Database+unregister_udf) ⇒ <code>this</code>
+        * [.registerReplacementScan(fun)](#module_duckdb..Database+registerReplacementScan) ⇒ <code>this</code>
         * [.get()](#module_duckdb..Database+get)
     * [~ERROR](#module_duckdb..ERROR) : <code>number</code>
     * [~OPEN_READONLY](#module_duckdb..OPEN_READONLY) : <code>number</code>
@@ -130,7 +148,7 @@ Run a SQL query, returns a IpcResultStreamIterator that allows streaming the res
 (requires arrow extension to be loaded)
 
 **Kind**: instance method of [<code>Connection</code>](#module_duckdb..Connection)  
-**Returns**: IpcResultStreamIterator  
+**Returns**: Promise<IpcResultStreamIterator>  
 
 | Param | Type |
 | --- | --- |
@@ -260,6 +278,7 @@ Unregister the Buffer
 **Kind**: inner class of [<code>duckdb</code>](#module_duckdb)  
 
 * [~Statement](#module_duckdb..Statement)
+    * [.sql](#module_duckdb..Statement+sql) ⇒
     * [.get()](#module_duckdb..Statement+get)
     * [.run(sql, ...params, callback)](#module_duckdb..Statement+run) ⇒ <code>void</code>
     * [.all(sql, ...params, callback)](#module_duckdb..Statement+all) ⇒ <code>void</code>
@@ -268,6 +287,12 @@ Unregister the Buffer
     * [.finalize(sql, ...params, callback)](#module_duckdb..Statement+finalize) ⇒ <code>void</code>
     * [.stream(sql, ...params)](#module_duckdb..Statement+stream)
 
+<a name="module_duckdb..Statement+sql"></a>
+
+#### statement.sql ⇒
+**Kind**: instance property of [<code>Statement</code>](#module_duckdb..Statement)  
+**Returns**: sql contained in statement  
+**Field**:   
 <a name="module_duckdb..Statement+get"></a>
 
 #### statement.get()
@@ -373,6 +398,14 @@ Main database interface
 
 **Kind**: inner property of [<code>duckdb</code>](#module_duckdb)  
 
+| Param | Description |
+| --- | --- |
+| path | path to database file or :memory: for in-memory database |
+| access_mode | access mode |
+| config | the configuration object |
+| callback | callback function |
+
+
 * [~Database](#module_duckdb..Database)
     * [.close(callback)](#module_duckdb..Database+close) ⇒ <code>void</code>
     * [.close_internal(callback)](#module_duckdb..Database+close_internal) ⇒ <code>void</code>
@@ -393,6 +426,7 @@ Main database interface
     * [.register_buffer(name)](#module_duckdb..Database+register_buffer) ⇒ <code>this</code>
     * [.unregister_buffer(name)](#module_duckdb..Database+unregister_buffer) ⇒ <code>this</code>
     * [.unregister_udf(name)](#module_duckdb..Database+unregister_udf) ⇒ <code>this</code>
+    * [.registerReplacementScan(fun)](#module_duckdb..Database+registerReplacementScan) ⇒ <code>this</code>
     * [.get()](#module_duckdb..Database+get)
 
 <a name="module_duckdb..Database+close"></a>
@@ -624,6 +658,17 @@ Convenience method for Connection#unregister_udf
 | --- |
 | name | 
 
+<a name="module_duckdb..Database+registerReplacementScan"></a>
+
+#### database.registerReplacementScan(fun) ⇒ <code>this</code>
+Register a table replace scan function
+
+**Kind**: instance method of [<code>Database</code>](#module_duckdb..Database)  
+
+| Param | Description |
+| --- | --- |
+| fun | Replacement scan function |
+
 <a name="module_duckdb..Database+get"></a>
 
 #### database.get()
@@ -672,3 +717,30 @@ Currently ignored
 Currently ignored
 
 **Kind**: inner constant of [<code>duckdb</code>](#module_duckdb)  
+<a name="DuckDbError"></a>
+
+## DuckDbError : <code>object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| errno | <code>number</code> | -1 for DuckDB errors |
+| message | <code>string</code> | Error message |
+| code | <code>string</code> | 'DUCKDB_NODEJS_ERROR' for DuckDB errors |
+| errorType | <code>string</code> | DuckDB error type code (eg, HTTP, IO, Catalog) |
+
+<a name="HTTPError"></a>
+
+## HTTPError : <code>object</code>
+**Kind**: global typedef  
+**Extends**: [<code>DuckDbError</code>](#DuckDbError)  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| statusCode | <code>number</code> | HTTP response status code |
+| reason | <code>string</code> | HTTP response reason |
+| response | <code>string</code> | HTTP response body |
+| headers | <code>object</code> | HTTP headers |
+
